@@ -1,6 +1,6 @@
-import { useEffect } from 'react';
+import { useEffect, useCallback } from 'react';
 import { StyleSheet, Text, View, ScrollView } from 'react-native';
-import { router } from 'expo-router';
+import { router, useFocusEffect } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useContentStore, useProgressStore } from '../../src/stores';
 import { Card, Button } from '../../src/components';
@@ -11,9 +11,15 @@ export default function HomeScreen() {
 
   useEffect(() => {
     loadContent();
-    loadProgress();
-    loadReviewQueue();
-  }, [loadContent, loadProgress, loadReviewQueue]);
+  }, [loadContent]);
+
+  // 화면에 포커스될 때마다 진도/복습 새로고침
+  useFocusEffect(
+    useCallback(() => {
+      loadProgress();
+      loadReviewQueue();
+    }, [loadProgress, loadReviewQueue])
+  );
 
   const handleStartLearning = () => {
     if (sentences.length > 0) {
@@ -64,7 +70,7 @@ export default function HomeScreen() {
 
       {lastStudiedSentence && (
         <View style={styles.lastStudied}>
-          <Text style={styles.lastStudiedLabel}>어제 배운 표현</Text>
+          <Text style={styles.lastStudiedLabel}>최근 학습한 표현</Text>
           <Text style={styles.lastStudiedText}>
             「{lastStudiedSentence.chunks[0]?.jp}」 {lastStudiedSentence.chunks[0]?.kr}
           </Text>
