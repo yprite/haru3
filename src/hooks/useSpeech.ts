@@ -1,4 +1,4 @@
-import { useCallback, useState, useEffect } from 'react';
+import { useCallback, useState } from 'react';
 import * as Speech from 'expo-speech';
 
 interface UseSpeechOptions {
@@ -10,27 +10,21 @@ interface UseSpeechReturn {
   speak: (text: string) => void;
   stop: () => void;
   isSpeaking: boolean;
-  isAvailable: boolean;
 }
 
 export function useSpeech(options: UseSpeechOptions = {}): UseSpeechReturn {
-  const { language = 'ja-JP', rate = 0.9 } = options;
+  const { language = 'ja', rate = 0.9 } = options;
   const [isSpeaking, setIsSpeaking] = useState(false);
-  const [isAvailable, setIsAvailable] = useState(false);
-
-  useEffect(() => {
-    Speech.getAvailableVoicesAsync().then((voices) => {
-      setIsAvailable(voices.length > 0);
-    });
-  }, []);
 
   const speak = useCallback(
     (text: string): void => {
       Speech.stop();
       setIsSpeaking(true);
+
       Speech.speak(text, {
         language,
         rate,
+        pitch: 1.0,
         onStart: () => setIsSpeaking(true),
         onDone: () => setIsSpeaking(false),
         onError: () => setIsSpeaking(false),
@@ -45,5 +39,5 @@ export function useSpeech(options: UseSpeechOptions = {}): UseSpeechReturn {
     setIsSpeaking(false);
   }, []);
 
-  return { speak, stop, isSpeaking, isAvailable };
+  return { speak, stop, isSpeaking };
 }
