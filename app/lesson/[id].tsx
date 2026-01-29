@@ -3,7 +3,7 @@ import { StyleSheet, View, Text, SafeAreaView } from 'react-native';
 import { useLocalSearchParams, router, Stack } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useLesson } from '../../src/hooks';
-import { useProgressStore, useSessionStore } from '../../src/stores';
+import { useProgressStore, useSessionStore, useContentStore } from '../../src/stores';
 import { Button } from '../../src/components';
 import {
   StepListen,
@@ -39,8 +39,9 @@ export default function LessonScreen() {
     endSession,
   } = useLesson(id);
 
-  const { getProgress } = useProgressStore();
+  const { getProgress, progressMap } = useProgressStore();
   const { goToNextSentence, sentenceQueue, queueIndex } = useSessionStore();
+  const { getCategoryById, getSentencesByCategory } = useContentStore();
 
   const handleClose = () => {
     endSession();
@@ -70,6 +71,11 @@ export default function LessonScreen() {
 
   const progress = getProgress(currentSentence.id);
   const hasNextSentence = queueIndex < sentenceQueue.length - 1;
+
+  const category = getCategoryById(currentSentence.categoryId);
+  const categorySentences = getSentencesByCategory(currentSentence.categoryId);
+  const learnedCount = categorySentences.filter((s) => progressMap.has(s.id)).length;
+  const remainingSentences = categorySentences.length - learnedCount;
 
   const renderStep = () => {
     switch (currentStep) {
@@ -141,6 +147,8 @@ export default function LessonScreen() {
             sentence={currentSentence}
             srsStage={progress?.srsStage}
             hasNext={hasNextSentence}
+            remainingSentences={remainingSentences}
+            categoryName={category?.name ?? '카페'}
             onNextSentence={handleNextSentence}
             onFinish={handleFinish}
           />

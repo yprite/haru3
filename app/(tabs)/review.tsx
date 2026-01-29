@@ -44,7 +44,7 @@ export default function ReviewScreen() {
         </Text>
         <Button
           title="학습하러 가기"
-          onPress={() => router.push('/(tabs)/')}
+          onPress={() => router.push('/')}
           style={styles.goButton}
         />
       </View>
@@ -62,6 +62,13 @@ export default function ReviewScreen() {
       <Text style={styles.pageSubtitle}>
         잊기 전에 복습하면 기억이 더 오래 남아요
       </Text>
+
+      <View style={styles.retentionInfo}>
+        <Ionicons name="trending-up" size={18} color="#1976D2" />
+        <Text style={styles.retentionText}>
+          오늘 복습하면 기억 유지율 90% · 미루면 점점 잊혀져요
+        </Text>
+      </View>
 
       <Button
         title="전체 복습 시작"
@@ -164,7 +171,21 @@ const styles = StyleSheet.create({
   pageSubtitle: {
     fontSize: 16,
     color: '#666666',
+    marginBottom: 12,
+  },
+  retentionInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#E3F2FD',
+    borderRadius: 10,
+    padding: 12,
+    gap: 8,
     marginBottom: 20,
+  },
+  retentionText: {
+    fontSize: 13,
+    color: '#1565C0',
+    flex: 1,
   },
   startButton: {
     marginBottom: 24,

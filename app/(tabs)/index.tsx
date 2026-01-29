@@ -7,7 +7,7 @@ import { Card, Button } from '../../src/components';
 
 export default function HomeScreen() {
   const { sentences, categories, loadContent, isLoading } = useContentStore();
-  const { stats, reviewQueue, loadProgress, loadReviewQueue } = useProgressStore();
+  const { stats, reviewQueue, progressMap, loadProgress, loadReviewQueue } = useProgressStore();
 
   useEffect(() => {
     loadContent();
@@ -28,6 +28,23 @@ export default function HomeScreen() {
   const cafeSentences = sentences.filter((s) => s.categoryId === 'l1_cafe');
   const reviewCount = reviewQueue.length;
 
+  const lastStudiedSentence = (() => {
+    const progressList = Array.from(progressMap.values());
+    if (progressList.length === 0) return null;
+
+    const sorted = progressList
+      .filter((p) => p.lastStudiedAt)
+      .sort((a, b) => {
+        const dateA = new Date(a.lastStudiedAt ?? 0).getTime();
+        const dateB = new Date(b.lastStudiedAt ?? 0).getTime();
+        return dateB - dateA;
+      });
+
+    if (sorted.length === 0) return null;
+    const lastProgress = sorted[0];
+    return sentences.find((s) => s.id === lastProgress.sentenceId) ?? null;
+  })();
+
   if (isLoading) {
     return (
       <View style={styles.loadingContainer}>
@@ -44,6 +61,15 @@ export default function HomeScreen() {
           매일 3문장씩, 자연스럽게 익혀요
         </Text>
       </View>
+
+      {lastStudiedSentence && (
+        <View style={styles.lastStudied}>
+          <Text style={styles.lastStudiedLabel}>어제 배운 표현</Text>
+          <Text style={styles.lastStudiedText}>
+            「{lastStudiedSentence.chunks[0]?.jp}」 {lastStudiedSentence.chunks[0]?.kr}
+          </Text>
+        </View>
+      )}
 
       <Card style={styles.missionCard} onPress={handleStartLearning}>
         <View style={styles.missionHeader}>
@@ -92,8 +118,8 @@ export default function HomeScreen() {
             <Text style={styles.statLabel}>마스터</Text>
           </View>
           <View style={styles.statItem}>
-            <Text style={styles.statValue}>{stats?.currentStreak ?? 0}일</Text>
-            <Text style={styles.statLabel}>연속 학습</Text>
+            <Text style={styles.statValue}>{Math.min(stats?.currentStreak ?? 0, 7)}일</Text>
+            <Text style={styles.statLabel}>이번 주</Text>
           </View>
         </View>
       </View>
@@ -146,6 +172,21 @@ const styles = StyleSheet.create({
   subGreeting: {
     fontSize: 16,
     color: '#666666',
+  },
+  lastStudied: {
+    backgroundColor: '#E3F2FD',
+    borderRadius: 12,
+    padding: 14,
+    marginBottom: 16,
+  },
+  lastStudiedLabel: {
+    fontSize: 12,
+    color: '#1976D2',
+    marginBottom: 4,
+  },
+  lastStudiedText: {
+    fontSize: 15,
+    color: '#333333',
   },
   missionCard: {
     marginBottom: 16,
