@@ -58,26 +58,24 @@ export function useLesson(sentenceId?: string) {
     return assemblyAnswer.every((chunk, index) => chunk === correctOrder[index]);
   }, [currentSentence, assemblyAnswer]);
 
-  const completeCurrentSentence = useCallback(async () => {
+  // 진도만 저장 (다음 단계 이동은 하지 않음)
+  const saveProgress = useCallback(async () => {
     if (!currentSentence || !recallRating) return;
-
     await updateAfterReview(currentSentence.id, recallRating);
+  }, [currentSentence, recallRating, updateAfterReview]);
 
-    const hasNext = goToNextSentence();
-    if (!hasNext) {
-      const { durationMinutes } = endSession();
-      if (durationMinutes > 0) {
-        await incrementStudyTime(durationMinutes);
-      }
+  // 다음 문장으로 이동 (StepComplete에서 호출)
+  const moveToNextSentence = useCallback(() => {
+    return goToNextSentence();
+  }, [goToNextSentence]);
+
+  // 세션 종료 (StepComplete에서 호출)
+  const finishSession = useCallback(async () => {
+    const { durationMinutes } = endSession();
+    if (durationMinutes > 0) {
+      await incrementStudyTime(durationMinutes);
     }
-  }, [
-    currentSentence,
-    recallRating,
-    updateAfterReview,
-    goToNextSentence,
-    endSession,
-    incrementStudyTime,
-  ]);
+  }, [endSession, incrementStudyTime]);
 
   const totalSteps = 7;
   const totalSentences = sentenceQueue.length;
@@ -107,7 +105,9 @@ export function useLesson(sentenceId?: string) {
     setAssemblyAnswer,
     setRecallRating,
     checkAssemblyAnswer,
-    completeCurrentSentence,
+    saveProgress,
+    moveToNextSentence,
+    finishSession,
     startSession,
     endSession,
   };

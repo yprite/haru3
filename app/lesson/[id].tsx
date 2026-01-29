@@ -35,12 +35,14 @@ export default function LessonScreen() {
     setAssemblyAnswer,
     setRecallRating,
     checkAssemblyAnswer,
-    completeCurrentSentence,
+    saveProgress,
+    moveToNextSentence,
+    finishSession,
     endSession,
   } = useLesson(id);
 
   const { getProgress, progressMap } = useProgressStore();
-  const { goToNextSentence, sentenceQueue, queueIndex } = useSessionStore();
+  const { sentenceQueue, queueIndex } = useSessionStore();
   const { getCategoryById, getSentencesByCategory } = useContentStore();
 
   const handleClose = () => {
@@ -49,15 +51,15 @@ export default function LessonScreen() {
   };
 
   const handleNextSentence = () => {
-    const hasNext = goToNextSentence();
+    const hasNext = moveToNextSentence();
     if (!hasNext) {
-      endSession();
+      finishSession();
       router.back();
     }
   };
 
-  const handleFinish = () => {
-    endSession();
+  const handleFinish = async () => {
+    await finishSession();
     router.back();
   };
 
@@ -134,8 +136,8 @@ export default function LessonScreen() {
             answer={assemblyAnswer}
             onAnswerChange={setAssemblyAnswer}
             onNext={async () => {
-              await completeCurrentSentence();
-              goToNextStep();
+              await saveProgress();
+              goToNextStep(); // → complete 단계로 이동
             }}
             onPrev={goToPreviousStep}
             onCheck={checkAssemblyAnswer}
