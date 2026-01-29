@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useState, useEffect } from 'react';
 import * as Speech from 'expo-speech';
 
 interface UseSpeechOptions {
@@ -7,30 +7,35 @@ interface UseSpeechOptions {
 }
 
 interface UseSpeechReturn {
-  speak: (text: string) => Promise<void>;
+  speak: (text: string) => void;
   stop: () => void;
   isSpeaking: boolean;
+  isAvailable: boolean;
 }
 
 export function useSpeech(options: UseSpeechOptions = {}): UseSpeechReturn {
   const { language = 'ja-JP', rate = 0.9 } = options;
   const [isSpeaking, setIsSpeaking] = useState(false);
+  const [isAvailable, setIsAvailable] = useState(false);
+
+  useEffect(() => {
+    Speech.getAvailableVoicesAsync().then((voices) => {
+      setIsAvailable(voices.length > 0);
+    });
+  }, []);
 
   const speak = useCallback(
-    async (text: string): Promise<void> => {
-      try {
-        await Speech.stop();
-        setIsSpeaking(true);
-        await Speech.speak(text, {
-          language,
-          rate,
-          onDone: () => setIsSpeaking(false),
-          onError: () => setIsSpeaking(false),
-          onStopped: () => setIsSpeaking(false),
-        });
-      } catch {
-        setIsSpeaking(false);
-      }
+    (text: string): void => {
+      Speech.stop();
+      setIsSpeaking(true);
+      Speech.speak(text, {
+        language,
+        rate,
+        onStart: () => setIsSpeaking(true),
+        onDone: () => setIsSpeaking(false),
+        onError: () => setIsSpeaking(false),
+        onStopped: () => setIsSpeaking(false),
+      });
     },
     [language, rate]
   );
@@ -40,5 +45,5 @@ export function useSpeech(options: UseSpeechOptions = {}): UseSpeechReturn {
     setIsSpeaking(false);
   }, []);
 
-  return { speak, stop, isSpeaking };
+  return { speak, stop, isSpeaking, isAvailable };
 }
