@@ -7,7 +7,7 @@ export const LEVELS: readonly Level[] = [
     name: '서바이벌',
     description: '일본 여행에서 꼭 필요한 기초 표현',
     order: 1,
-    totalSentences: 30,
+    totalSentences: 60,
     icon: '🌱',
     color: '#4CAF50',
   },
