@@ -15,7 +15,9 @@ export default function CategoriesScreen() {
   }, [loadContent, loadProgress]);
 
   const handleCategoryPress = (categoryId: string) => {
-    const categorySentences = sentences.filter((s) => s.categoryId === categoryId);
+    const categorySentences = sentences
+      .filter((s) => s.categoryId === categoryId)
+      .sort((a, b) => a.order - b.order);
     if (categorySentences.length > 0) {
       router.push(`/lesson/${categorySentences[0].id}`);
     }

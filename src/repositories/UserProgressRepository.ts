@@ -73,9 +73,14 @@ class LocalUserProgressRepository implements UserProgressRepository {
   }
 
   private async saveProgressMap(map: Map<string, UserProgress>): Promise<void> {
-    const data = Array.from(map.values());
-    await AsyncStorage.setItem(STORAGE_KEYS.PROGRESS, JSON.stringify(data));
-    this.progressCache = map;
+    try {
+      const data = Array.from(map.values());
+      await AsyncStorage.setItem(STORAGE_KEYS.PROGRESS, JSON.stringify(data));
+      this.progressCache = map;
+    } catch (error) {
+      console.error('Failed to save progress:', error);
+      throw new Error('진도 저장에 실패했습니다.');
+    }
   }
 
   async getProgress(sentenceId: string): Promise<UserProgress | null> {
@@ -184,10 +189,15 @@ class LocalUserProgressRepository implements UserProgressRepository {
   }
 
   async updateStats(updates: Partial<UserStats>): Promise<UserStats> {
-    const current = await this.getStats();
-    const updated = { ...current, ...updates };
-    await AsyncStorage.setItem(STORAGE_KEYS.STATS, JSON.stringify(updated));
-    return updated;
+    try {
+      const current = await this.getStats();
+      const updated = { ...current, ...updates };
+      await AsyncStorage.setItem(STORAGE_KEYS.STATS, JSON.stringify(updated));
+      return updated;
+    } catch (error) {
+      console.error('Failed to update stats:', error);
+      throw new Error('통계 저장에 실패했습니다.');
+    }
   }
 
   async getSettings(): Promise<UserSettings> {
@@ -203,19 +213,29 @@ class LocalUserProgressRepository implements UserProgressRepository {
   }
 
   async updateSettings(updates: Partial<UserSettings>): Promise<UserSettings> {
-    const current = await this.getSettings();
-    const updated = { ...current, ...updates };
-    await AsyncStorage.setItem(STORAGE_KEYS.SETTINGS, JSON.stringify(updated));
-    return updated;
+    try {
+      const current = await this.getSettings();
+      const updated = { ...current, ...updates };
+      await AsyncStorage.setItem(STORAGE_KEYS.SETTINGS, JSON.stringify(updated));
+      return updated;
+    } catch (error) {
+      console.error('Failed to update settings:', error);
+      throw new Error('설정 저장에 실패했습니다.');
+    }
   }
 
   async clearAllData(): Promise<void> {
-    await AsyncStorage.multiRemove([
-      STORAGE_KEYS.PROGRESS,
-      STORAGE_KEYS.STATS,
-      STORAGE_KEYS.SETTINGS,
-    ]);
-    this.progressCache = null;
+    try {
+      await AsyncStorage.multiRemove([
+        STORAGE_KEYS.PROGRESS,
+        STORAGE_KEYS.STATS,
+        STORAGE_KEYS.SETTINGS,
+      ]);
+      this.progressCache = null;
+    } catch (error) {
+      console.error('Failed to clear data:', error);
+      throw new Error('데이터 삭제에 실패했습니다.');
+    }
   }
 }
 

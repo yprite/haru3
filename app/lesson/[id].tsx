@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { StyleSheet, View, Text, SafeAreaView } from 'react-native';
 import { useLocalSearchParams, router, Stack } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -17,6 +17,8 @@ import {
 
 export default function LessonScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
+  const [loadingTimeout, setLoadingTimeout] = useState(false);
+
   const {
     currentSentence,
     currentStep,
@@ -45,6 +47,14 @@ export default function LessonScreen() {
   const { sentenceQueue, queueIndex } = useSessionStore();
   const { getCategoryById, getSentencesByCategory } = useContentStore();
 
+  useEffect(() => {
+    if (!currentSentence) {
+      const timer = setTimeout(() => setLoadingTimeout(true), 3000);
+      return () => clearTimeout(timer);
+    }
+    setLoadingTimeout(false);
+  }, [currentSentence]);
+
   const handleClose = () => {
     endSession();
     router.back();
@@ -66,7 +76,20 @@ export default function LessonScreen() {
   if (!currentSentence) {
     return (
       <SafeAreaView style={styles.loadingContainer}>
-        <Text style={styles.loadingText}>문장을 불러오는 중...</Text>
+        {loadingTimeout ? (
+          <>
+            <Ionicons name="alert-circle-outline" size={48} color="#F44336" />
+            <Text style={styles.errorText}>문장을 불러올 수 없습니다</Text>
+            <Text style={styles.errorSubtext}>학습 콘텐츠를 찾지 못했어요</Text>
+            <Button
+              title="돌아가기"
+              onPress={() => router.back()}
+              style={styles.backButton}
+            />
+          </>
+        ) : (
+          <Text style={styles.loadingText}>문장을 불러오는 중...</Text>
+        )}
       </SafeAreaView>
     );
   }
@@ -215,6 +238,21 @@ const styles = StyleSheet.create({
   loadingText: {
     fontSize: 16,
     color: '#666666',
+  },
+  errorText: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#1A1A1A',
+    marginTop: 16,
+  },
+  errorSubtext: {
+    fontSize: 14,
+    color: '#666666',
+    marginTop: 8,
+    marginBottom: 24,
+  },
+  backButton: {
+    paddingHorizontal: 32,
   },
   stepIndicator: {
     flexDirection: 'row',
