@@ -35,7 +35,7 @@ export default function ReviewScreen() {
 
   if (reviewSentences.length === 0) {
     return (
-      <View style={[styles.emptyContainer, { paddingTop: insets.top }]}>
+      <View style={[styles.emptyContainer, { paddingTop: insets.top, paddingBottom: insets.bottom }]}>
         <View style={styles.emptyIcon}>
           <Ionicons name="checkmark-circle" size={80} color="#4CAF50" />
         </View>
@@ -54,7 +54,7 @@ export default function ReviewScreen() {
   }
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={[styles.content, { paddingTop: insets.top + 20 }]}>
+    <ScrollView style={styles.container} contentContainerStyle={[styles.content, { paddingTop: insets.top + 20, paddingBottom: insets.bottom + 40 }]}>
       <View style={styles.header}>
         <Text style={styles.pageTitle}>복습 대기</Text>
         <View style={styles.countBadge}>
