@@ -5,7 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useContentStore, useProgressStore } from '../../src/stores';
 import { Card, Button } from '../../src/components';
 
-const DAILY_GOAL = 5; // 일일 목표 문장 수
+const DAILY_GOAL = 3; // 뇌과학 기반 일일 학습 제한 (3문장)
 
 export default function HomeScreen() {
   const { sentences, categories, loadContent, isLoading } = useContentStore();
@@ -162,12 +162,20 @@ export default function HomeScreen() {
             <View style={styles.progressBarContainer}>
               <View style={[styles.progressBar, { width: `${progressPercent}%` }]} />
             </View>
-            <Button
-              title={isNewLearning ? '학습 시작' : '학습 계속하기'}
-              onPress={handleStartLearning}
-              size="large"
-              icon={<Ionicons name="play" size={20} color="#ffffff" />}
-            />
+            {isDailyGoalComplete ? (
+              <View style={styles.dailyCompleteContainer}>
+                <Ionicons name="checkmark-circle" size={24} color="#4CAF50" />
+                <Text style={styles.dailyCompleteText}>오늘 학습 완료!</Text>
+                <Text style={styles.dailyCompleteSubtext}>내일 새로운 문장을 학습하세요</Text>
+              </View>
+            ) : (
+              <Button
+                title={isNewLearning ? '학습 시작' : '학습 계속하기'}
+                onPress={handleStartLearning}
+                size="large"
+                icon={<Ionicons name="play" size={20} color="#ffffff" />}
+              />
+            )}
           </Card>
         )}
 
@@ -342,6 +350,22 @@ const styles = StyleSheet.create({
     height: '100%',
     backgroundColor: '#4CAF50',
     borderRadius: 3,
+  },
+  // 일일 학습 완료
+  dailyCompleteContainer: {
+    alignItems: 'center',
+    paddingVertical: 12,
+    gap: 4,
+  },
+  dailyCompleteText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#4CAF50',
+    marginTop: 4,
+  },
+  dailyCompleteSubtext: {
+    fontSize: 13,
+    color: '#666666',
   },
   // 복습 배너
   reviewBanner: {
