@@ -1,11 +1,13 @@
 import { useEffect, useCallback, useMemo } from 'react';
 import { StyleSheet, Text, View, ScrollView, TouchableOpacity } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router, useFocusEffect } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useContentStore, useProgressStore } from '../../src/stores';
 import { Card, Button } from '../../src/components';
 
 export default function HomeScreen() {
+  const insets = useSafeAreaInsets();
   const { sentences, categories, loadContent, isLoading } = useContentStore();
   const { stats, reviewQueue, progressMap, loadProgress, loadReviewQueue } = useProgressStore();
 
@@ -102,7 +104,7 @@ export default function HomeScreen() {
   }
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+    <ScrollView style={styles.container} contentContainerStyle={[styles.content, { paddingTop: insets.top + 20 }]}>
       <View style={styles.greeting}>
         <Text style={styles.greetingText}>오늘도 일본어 학습!</Text>
         <Text style={styles.subGreeting}>

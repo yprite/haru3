@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { StyleSheet, Text, View, ScrollView } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useContentStore, useProgressStore, useSessionStore } from '../../src/stores';
@@ -7,6 +8,7 @@ import { Card, Button } from '../../src/components';
 import { getStageLabel, getStageColor } from '../../src/utils/srs';
 
 export default function ReviewScreen() {
+  const insets = useSafeAreaInsets();
   const { sentences, loadContent } = useContentStore();
   const { reviewQueue, progressMap, loadProgress, loadReviewQueue } = useProgressStore();
   const { startSession } = useSessionStore();
@@ -33,7 +35,7 @@ export default function ReviewScreen() {
 
   if (reviewSentences.length === 0) {
     return (
-      <View style={styles.emptyContainer}>
+      <View style={[styles.emptyContainer, { paddingTop: insets.top }]}>
         <View style={styles.emptyIcon}>
           <Ionicons name="checkmark-circle" size={80} color="#4CAF50" />
         </View>
@@ -52,7 +54,7 @@ export default function ReviewScreen() {
   }
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+    <ScrollView style={styles.container} contentContainerStyle={[styles.content, { paddingTop: insets.top + 20 }]}>
       <View style={styles.header}>
         <Text style={styles.pageTitle}>복습 대기</Text>
         <View style={styles.countBadge}>

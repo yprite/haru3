@@ -1,5 +1,6 @@
 import { useCallback, useMemo, useState } from 'react';
 import { StyleSheet, Text, View, ScrollView, TouchableOpacity } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useFocusEffect } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useProgressStore } from '../../src/stores';
@@ -8,6 +9,7 @@ import { Card } from '../../src/components';
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
 export default function StatsScreen() {
+  const insets = useSafeAreaInsets();
   const { progressMap, loadProgress } = useProgressStore();
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
 
@@ -107,7 +109,7 @@ export default function StatsScreen() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
+    <ScrollView style={styles.container} contentContainerStyle={[styles.contentContainer, { paddingTop: insets.top + 16 }]}>
       {/* 연간 학습 캘린더 */}
       <Card style={styles.calendarCard}>
         <View style={styles.calendarHeader}>
