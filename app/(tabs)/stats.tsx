@@ -191,7 +191,7 @@ const styles = StyleSheet.create({
   // 연간 캘린더
   calendarCard: {
     padding: 20,
-    marginBottom: 12,
+    marginBottom: 20,
   },
   calendarHeader: {
     flexDirection: 'row',
