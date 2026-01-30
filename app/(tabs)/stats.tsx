@@ -1,13 +1,16 @@
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { useFocusEffect } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useContentStore, useProgressStore } from '../../src/stores';
 import { Card } from '../../src/components';
 
+const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
 export default function StatsScreen() {
   const { sentences, categories, levels, loadContent } = useContentStore();
   const { stats, progressMap, loadProgress, clearAllData } = useProgressStore();
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
 
   useFocusEffect(
     useCallback(() => {
@@ -15,6 +18,93 @@ export default function StatsScreen() {
       loadProgress();
     }, [loadContent, loadProgress])
   );
+
+  // 학습한 날짜 Set 생성
+  const studiedDates = useMemo(() => {
+    const dates = new Set<string>();
+    progressMap.forEach((progress) => {
+      if (progress.lastStudiedAt) {
+        const date = progress.lastStudiedAt.split('T')[0];
+        dates.add(date);
+      }
+    });
+    return dates;
+  }, [progressMap]);
+
+  // 연간 학습 통계 계산
+  const yearStats = useMemo(() => {
+    const yearStart = `${selectedYear}-01-01`;
+    const yearEnd = `${selectedYear}-12-31`;
+
+    let studiedDays = 0;
+    let currentStreak = 0;
+    let longestStreak = 0;
+    let tempStreak = 0;
+
+    // 해당 연도의 모든 날짜 순회
+    const startDate = new Date(selectedYear, 0, 1);
+    const endDate = new Date(selectedYear, 11, 31);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    for (let d = new Date(startDate); d <= endDate && d <= today; d.setDate(d.getDate() + 1)) {
+      const dateStr = d.toISOString().split('T')[0];
+      if (studiedDates.has(dateStr)) {
+        studiedDays++;
+        tempStreak++;
+        longestStreak = Math.max(longestStreak, tempStreak);
+      } else {
+        tempStreak = 0;
+      }
+    }
+
+    // 현재 연속 학습일 계산 (오늘부터 역순)
+    for (let d = new Date(today); d >= startDate; d.setDate(d.getDate() - 1)) {
+      const dateStr = d.toISOString().split('T')[0];
+      if (studiedDates.has(dateStr)) {
+        currentStreak++;
+      } else {
+        break;
+      }
+    }
+
+    const totalDays = Math.min(
+      Math.ceil((today.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)) + 1,
+      365
+    );
+
+    return {
+      studiedDays,
+      totalDays,
+      percent: totalDays > 0 ? Math.round((studiedDays / totalDays) * 100) : 0,
+      currentStreak,
+      longestStreak,
+    };
+  }, [studiedDates, selectedYear]);
+
+  // 월별 날짜 그리드 생성
+  const getMonthDays = (month: number) => {
+    const days: { date: string; isStudied: boolean; isToday: boolean; isFuture: boolean }[] = [];
+    const year = selectedYear;
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    for (let day = 1; day <= daysInMonth; day++) {
+      const date = new Date(year, month, day);
+      const dateStr = date.toISOString().split('T')[0];
+      const isToday = date.getTime() === today.getTime();
+      const isFuture = date > today;
+
+      days.push({
+        date: dateStr,
+        isStudied: studiedDates.has(dateStr),
+        isToday,
+        isFuture,
+      });
+    }
+    return days;
+  };
 
   // 레벨별 진행률 계산
   const levelProgress = useMemo(() => {
@@ -73,36 +163,74 @@ export default function StatsScreen() {
     );
   };
 
-  const formatStudyTime = (minutes: number) => {
-    if (minutes < 60) return `${minutes}분`;
-    const hours = Math.floor(minutes / 60);
-    const mins = minutes % 60;
-    return mins > 0 ? `${hours}시간 ${mins}분` : `${hours}시간`;
-  };
+  const currentYear = new Date().getFullYear();
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
-      {/* 전체 통계 */}
-      <Card style={styles.statsCard}>
-        <Text style={styles.sectionTitle}>학습 통계</Text>
-        <View style={styles.statsGrid}>
-          <View style={styles.statItem}>
-            <Text style={styles.statValue}>{stats?.totalSentencesStudied ?? 0}</Text>
-            <Text style={styles.statLabel}>학습한 문장</Text>
+      {/* 연간 학습 캘린더 */}
+      <Card style={styles.calendarCard}>
+        <View style={styles.calendarHeader}>
+          <View>
+            <Text style={styles.calendarTitle}>학습 기록</Text>
+            <Text style={styles.calendarYear}>{selectedYear}</Text>
           </View>
-          <View style={styles.statItem}>
-            <Text style={styles.statValue}>{stats?.masteredSentences ?? 0}</Text>
-            <Text style={styles.statLabel}>마스터</Text>
-          </View>
-          <View style={styles.statItem}>
-            <Text style={styles.statValue}>{stats?.totalSessions ?? 0}</Text>
-            <Text style={styles.statLabel}>학습 세션</Text>
-          </View>
-          <View style={styles.statItem}>
-            <Text style={styles.statValue}>{formatStudyTime(stats?.totalStudyMinutes ?? 0)}</Text>
-            <Text style={styles.statLabel}>총 학습 시간</Text>
+          <View style={styles.calendarStats}>
+            <Text style={styles.calendarStatsMain}>
+              {yearStats.studiedDays} / {yearStats.totalDays}일 • {yearStats.percent}%
+            </Text>
+            <Text style={styles.calendarStatsSub}>
+              최장 {yearStats.longestStreak}일 연속
+            </Text>
           </View>
         </View>
+
+        {/* 년도 선택 */}
+        <View style={styles.yearSelector}>
+          <TouchableOpacity
+            style={styles.yearButton}
+            onPress={() => setSelectedYear(selectedYear - 1)}
+          >
+            <Ionicons name="chevron-back" size={20} color="#666666" />
+          </TouchableOpacity>
+          <Text style={styles.yearText}>{selectedYear}</Text>
+          <TouchableOpacity
+            style={[styles.yearButton, selectedYear >= currentYear && styles.yearButtonDisabled]}
+            onPress={() => selectedYear < currentYear && setSelectedYear(selectedYear + 1)}
+            disabled={selectedYear >= currentYear}
+          >
+            <Ionicons name="chevron-forward" size={20} color={selectedYear >= currentYear ? '#CCCCCC' : '#666666'} />
+          </TouchableOpacity>
+        </View>
+
+        {/* 월별 캘린더 그리드 */}
+        <View style={styles.monthsGrid}>
+          {MONTHS.map((monthName, monthIndex) => (
+            <View key={monthName} style={styles.monthContainer}>
+              <Text style={styles.monthLabel}>{monthName}</Text>
+              <View style={styles.daysGrid}>
+                {getMonthDays(monthIndex).map((day, index) => (
+                  <View
+                    key={index}
+                    style={[
+                      styles.dayCell,
+                      day.isStudied && styles.dayCellStudied,
+                      day.isToday && styles.dayCellToday,
+                      day.isFuture && styles.dayCellFuture,
+                    ]}
+                  />
+                ))}
+              </View>
+            </View>
+          ))}
+        </View>
+
+        {/* 현재 연속 학습 */}
+        {yearStats.currentStreak > 0 && (
+          <View style={styles.streakBanner}>
+            <Ionicons name="flame" size={20} color="#FF9800" />
+            <Text style={styles.streakText}>현재 {yearStats.currentStreak}일 연속 학습 중!</Text>
+          </View>
+        )}
       </Card>
 
       {/* 전체 진행률 */}
@@ -199,30 +327,113 @@ const styles = StyleSheet.create({
     padding: 16,
     paddingBottom: 32,
   },
-  statsCard: {
+  // 연간 캘린더
+  calendarCard: {
     padding: 16,
     marginBottom: 12,
   },
-  statsGrid: {
+  calendarHeader: {
     flexDirection: 'row',
-    flexWrap: 'wrap',
-    marginTop: 12,
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: 16,
   },
-  statItem: {
-    width: '50%',
-    paddingVertical: 12,
-    alignItems: 'center',
-  },
-  statValue: {
-    fontSize: 24,
+  calendarTitle: {
+    fontSize: 18,
     fontWeight: '700',
     color: '#1A1A1A',
   },
-  statLabel: {
-    fontSize: 13,
-    color: '#666666',
-    marginTop: 4,
+  calendarYear: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#2196F3',
+    marginTop: 2,
   },
+  calendarStats: {
+    alignItems: 'flex-end',
+  },
+  calendarStatsMain: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#1A1A1A',
+  },
+  calendarStatsSub: {
+    fontSize: 12,
+    color: '#666666',
+    marginTop: 2,
+  },
+  yearSelector: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 16,
+    gap: 16,
+  },
+  yearButton: {
+    padding: 8,
+  },
+  yearButtonDisabled: {
+    opacity: 0.5,
+  },
+  yearText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#1A1A1A',
+    minWidth: 60,
+    textAlign: 'center',
+  },
+  monthsGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+  },
+  monthContainer: {
+    width: '32%',
+    marginBottom: 16,
+  },
+  monthLabel: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#1A1A1A',
+    marginBottom: 6,
+  },
+  daysGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 2,
+  },
+  dayCell: {
+    width: 8,
+    height: 8,
+    borderRadius: 2,
+    backgroundColor: '#E8F5E9',
+  },
+  dayCellStudied: {
+    backgroundColor: '#4CAF50',
+  },
+  dayCellToday: {
+    borderWidth: 1,
+    borderColor: '#1A1A1A',
+  },
+  dayCellFuture: {
+    backgroundColor: '#F5F5F5',
+  },
+  streakBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#FFF8E1',
+    padding: 10,
+    borderRadius: 8,
+    marginTop: 8,
+    gap: 8,
+  },
+  streakText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#F57C00',
+  },
+  // 기존 스타일
   sectionTitle: {
     fontSize: 16,
     fontWeight: '600',
