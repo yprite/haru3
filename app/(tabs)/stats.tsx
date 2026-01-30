@@ -109,7 +109,10 @@ export default function StatsScreen() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={[styles.contentContainer, { paddingTop: insets.top + 16, paddingBottom: insets.bottom + 32 }]}>
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={[styles.contentContainer, { paddingTop: insets.top + 16, paddingBottom: 120 }]}
+    >
       {/* 연간 학습 캘린더 */}
       <Card style={styles.calendarCard}>
         <View style={styles.calendarHeader}>
