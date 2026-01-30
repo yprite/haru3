@@ -15,6 +15,13 @@ export { WEATHER_SENTENCES } from './sentences/l2_weather';
 export { HOBBY_SENTENCES } from './sentences/l2_hobby';
 export { FOOD_SENTENCES } from './sentences/l2_food';
 
+// Level 3 sentences
+export { EMOTION_SENTENCES } from './sentences/l3_emotion';
+export { OPINION_SENTENCES } from './sentences/l3_opinion';
+export { BUSINESS_SENTENCES } from './sentences/l3_business';
+export { CULTURE_SENTENCES } from './sentences/l3_culture';
+export { ADVANCED_SENTENCES } from './sentences/l3_advanced';
+
 import { CAFE_SENTENCES } from './sentences/l1_cafe';
 import { TRANSPORT_SENTENCES } from './sentences/l1_transport';
 import { SHOPPING_SENTENCES } from './sentences/l1_shopping';
@@ -25,6 +32,11 @@ import { GREETING_SENTENCES } from './sentences/l2_greeting';
 import { WEATHER_SENTENCES } from './sentences/l2_weather';
 import { HOBBY_SENTENCES } from './sentences/l2_hobby';
 import { FOOD_SENTENCES } from './sentences/l2_food';
+import { EMOTION_SENTENCES } from './sentences/l3_emotion';
+import { OPINION_SENTENCES } from './sentences/l3_opinion';
+import { BUSINESS_SENTENCES } from './sentences/l3_business';
+import { CULTURE_SENTENCES } from './sentences/l3_culture';
+import { ADVANCED_SENTENCES } from './sentences/l3_advanced';
 import type { Sentence } from '../types';
 
 export const ALL_SENTENCES: readonly Sentence[] = [
@@ -40,6 +52,12 @@ export const ALL_SENTENCES: readonly Sentence[] = [
   ...WEATHER_SENTENCES,
   ...HOBBY_SENTENCES,
   ...FOOD_SENTENCES,
+  // Level 3
+  ...EMOTION_SENTENCES,
+  ...OPINION_SENTENCES,
+  ...BUSINESS_SENTENCES,
+  ...CULTURE_SENTENCES,
+  ...ADVANCED_SENTENCES,
 ] as const;
 
 export function getSentenceById(sentenceId: string): Sentence | null {
