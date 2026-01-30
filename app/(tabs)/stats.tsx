@@ -193,7 +193,7 @@ const styles = StyleSheet.create({
   },
   // 연간 캘린더
   calendarCard: {
-    padding: 19,
+    padding: 20,
     marginBottom: 19,
   },
   calendarHeader: {
@@ -203,7 +203,7 @@ const styles = StyleSheet.create({
     marginBottom: 19,
   },
   calendarTitle: {
-    fontSize: 23,
+    fontSize: 24,
     fontWeight: '700',
     color: '#1A1A1A',
   },
@@ -231,7 +231,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 19,
-    gap: 19,
+    gap: 20,
   },
   yearButton: {
     padding: 10,
@@ -240,10 +240,10 @@ const styles = StyleSheet.create({
     opacity: 0.5,
   },
   yearText: {
-    fontSize: 19,
+    fontSize: 20,
     fontWeight: '700',
     color: '#1A1A1A',
-    minWidth: 78,
+    minWidth: 80,
     textAlign: 'center',
   },
   monthsGrid: {
