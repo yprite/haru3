@@ -33,7 +33,7 @@ export const useContentStore = create<ContentStore>((set, get) => ({
       const [levels, categories, sentences] = await Promise.all([
         localContentRepository.getAllLevels(),
         localContentRepository.getAllCategories(),
-        localContentRepository.getSentencesByLevel(1),
+        localContentRepository.getAllSentences(),
       ]);
       set({ levels, categories, sentences, isLoading: false });
     } catch (err) {

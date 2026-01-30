@@ -64,6 +64,13 @@ export class LocalContentRepository implements ContentRepository {
     return [...getSentencesByLevel(level)].sort((a, b) => a.order - b.order);
   }
 
+  async getAllSentences(): Promise<readonly Sentence[]> {
+    return [...ALL_SENTENCES].sort((a, b) => {
+      if (a.level !== b.level) return a.level - b.level;
+      return a.order - b.order;
+    });
+  }
+
   async getSentenceById(sentenceId: string): Promise<Sentence | null> {
     return getSentenceById(sentenceId);
   }
