@@ -193,22 +193,22 @@ const styles = StyleSheet.create({
   },
   // 연간 캘린더
   calendarCard: {
-    padding: 18,
-    marginBottom: 18,
+    padding: 19,
+    marginBottom: 19,
   },
   calendarHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-    marginBottom: 18,
+    marginBottom: 19,
   },
   calendarTitle: {
-    fontSize: 22,
+    fontSize: 23,
     fontWeight: '700',
     color: '#1A1A1A',
   },
   calendarYear: {
-    fontSize: 14,
+    fontSize: 15,
     fontWeight: '600',
     color: '#2196F3',
     marginTop: 4,
@@ -217,7 +217,7 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
   },
   calendarStatsMain: {
-    fontSize: 14,
+    fontSize: 15,
     fontWeight: '600',
     color: '#1A1A1A',
   },
@@ -230,20 +230,20 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 18,
-    gap: 18,
+    marginBottom: 19,
+    gap: 19,
   },
   yearButton: {
-    padding: 9,
+    padding: 10,
   },
   yearButtonDisabled: {
     opacity: 0.5,
   },
   yearText: {
-    fontSize: 18,
+    fontSize: 19,
     fontWeight: '700',
     color: '#1A1A1A',
-    minWidth: 72,
+    minWidth: 76,
     textAlign: 'center',
   },
   monthsGrid: {
@@ -253,13 +253,13 @@ const styles = StyleSheet.create({
   },
   monthContainer: {
     width: '32%',
-    marginBottom: 18,
+    marginBottom: 19,
   },
   monthLabel: {
     fontSize: 14,
     fontWeight: '600',
     color: '#1A1A1A',
-    marginBottom: 7,
+    marginBottom: 8,
   },
   daysGrid: {
     flexDirection: 'row',
@@ -289,8 +289,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFF8E1',
     padding: 13,
     borderRadius: 11,
-    marginTop: 10,
-    gap: 9,
+    marginTop: 11,
+    gap: 10,
   },
   streakText: {
     fontSize: 15,
