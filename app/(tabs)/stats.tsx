@@ -193,17 +193,17 @@ const styles = StyleSheet.create({
   },
   // 연간 캘린더
   calendarCard: {
-    padding: 16,
-    marginBottom: 16,
+    padding: 18,
+    marginBottom: 18,
   },
   calendarHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-    marginBottom: 12,
+    marginBottom: 18,
   },
   calendarTitle: {
-    fontSize: 20,
+    fontSize: 22,
     fontWeight: '700',
     color: '#1A1A1A',
   },
@@ -211,7 +211,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
     color: '#2196F3',
-    marginTop: 2,
+    marginTop: 4,
   },
   calendarStats: {
     alignItems: 'flex-end',
@@ -222,19 +222,19 @@ const styles = StyleSheet.create({
     color: '#1A1A1A',
   },
   calendarStatsSub: {
-    fontSize: 12,
+    fontSize: 13,
     color: '#666666',
-    marginTop: 2,
+    marginTop: 4,
   },
   yearSelector: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 12,
-    gap: 16,
+    marginBottom: 18,
+    gap: 18,
   },
   yearButton: {
-    padding: 8,
+    padding: 9,
   },
   yearButtonDisabled: {
     opacity: 0.5,
@@ -243,7 +243,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '700',
     color: '#1A1A1A',
-    minWidth: 70,
+    minWidth: 72,
     textAlign: 'center',
   },
   monthsGrid: {
@@ -253,30 +253,30 @@ const styles = StyleSheet.create({
   },
   monthContainer: {
     width: '32%',
-    marginBottom: 14,
+    marginBottom: 18,
   },
   monthLabel: {
-    fontSize: 13,
+    fontSize: 14,
     fontWeight: '600',
     color: '#1A1A1A',
-    marginBottom: 6,
+    marginBottom: 7,
   },
   daysGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 2,
+    gap: 3,
   },
   dayCell: {
-    width: 10,
-    height: 10,
-    borderRadius: 2,
+    width: 11,
+    height: 11,
+    borderRadius: 3,
     backgroundColor: '#E8F5E9',
   },
   dayCellStudied: {
     backgroundColor: '#4CAF50',
   },
   dayCellToday: {
-    borderWidth: 1,
+    borderWidth: 2,
     borderColor: '#1A1A1A',
   },
   dayCellFuture: {
@@ -287,13 +287,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: '#FFF8E1',
-    padding: 10,
-    borderRadius: 10,
-    marginTop: 8,
-    gap: 8,
+    padding: 13,
+    borderRadius: 11,
+    marginTop: 10,
+    gap: 9,
   },
   streakText: {
-    fontSize: 14,
+    fontSize: 15,
     fontWeight: '600',
     color: '#F57C00',
   },
