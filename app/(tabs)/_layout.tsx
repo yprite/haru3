@@ -38,10 +38,10 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="categories"
+        name="stats"
         options={{
-          title: '카테고리',
-          tabBarIcon: ({ color }) => <TabBarIcon name="grid" color={color} />,
+          title: '통계',
+          tabBarIcon: ({ color }) => <TabBarIcon name="stats-chart" color={color} />,
         }}
       />
       <Tabs.Screen

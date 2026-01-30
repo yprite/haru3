@@ -1,5 +1,5 @@
-import { useEffect, useCallback } from 'react';
-import { StyleSheet, Text, View, ScrollView } from 'react-native';
+import { useEffect, useCallback, useMemo } from 'react';
+import { StyleSheet, Text, View, ScrollView, TouchableOpacity } from 'react-native';
 import { router, useFocusEffect } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useContentStore, useProgressStore } from '../../src/stores';
@@ -13,7 +13,6 @@ export default function HomeScreen() {
     loadContent();
   }, [loadContent]);
 
-  // 화면에 포커스될 때마다 진도/복습 새로고침
   useFocusEffect(
     useCallback(() => {
       loadProgress();
@@ -21,8 +20,39 @@ export default function HomeScreen() {
     }, [loadProgress, loadReviewQueue])
   );
 
+  // 현재 진행 중인 카테고리 찾기
+  const currentCategory = useMemo(() => {
+    for (const category of categories) {
+      const categorySentences = sentences
+        .filter((s) => s.categoryId === category.id)
+        .sort((a, b) => a.order - b.order);
+      const learnedCount = categorySentences.filter((s) => progressMap.has(s.id)).length;
+      if (learnedCount < categorySentences.length) {
+        const nextSentence = categorySentences.find((s) => !progressMap.has(s.id));
+        return {
+          category,
+          learned: learnedCount,
+          total: categorySentences.length,
+          nextSentence,
+        };
+      }
+    }
+    // 모든 카테고리 완료 시 첫 번째 카테고리
+    const firstCategory = categories[0];
+    if (!firstCategory) return null;
+    const categorySentences = sentences.filter((s) => s.categoryId === firstCategory.id);
+    return {
+      category: firstCategory,
+      learned: categorySentences.length,
+      total: categorySentences.length,
+      nextSentence: categorySentences[0],
+    };
+  }, [categories, sentences, progressMap]);
+
   const handleStartLearning = () => {
-    if (sentences.length > 0) {
+    if (currentCategory?.nextSentence) {
+      router.push(`/lesson/${currentCategory.nextSentence.id}`);
+    } else if (sentences.length > 0) {
       router.push(`/lesson/${sentences[0].id}`);
     }
   };
@@ -31,10 +61,22 @@ export default function HomeScreen() {
     router.push('/(tabs)/review');
   };
 
-  const cafeSentences = sentences.filter((s) => s.categoryId === 'l1_cafe');
+  const handleGoToCategories = () => {
+    router.push('/categories');
+  };
+
+  const handleCategoryPress = (categoryId: string) => {
+    const categorySentences = sentences
+      .filter((s) => s.categoryId === categoryId)
+      .sort((a, b) => a.order - b.order);
+    if (categorySentences.length > 0) {
+      router.push(`/lesson/${categorySentences[0].id}`);
+    }
+  };
+
   const reviewCount = reviewQueue.length;
 
-  const lastStudiedSentence = (() => {
+  const lastStudiedSentence = useMemo(() => {
     const progressList = Array.from(progressMap.values());
     if (progressList.length === 0) return null;
 
@@ -49,7 +91,7 @@ export default function HomeScreen() {
     if (sorted.length === 0) return null;
     const lastProgress = sorted[0];
     return sentences.find((s) => s.id === lastProgress.sentenceId) ?? null;
-  })();
+  }, [progressMap, sentences]);
 
   if (isLoading) {
     return (
@@ -77,25 +119,27 @@ export default function HomeScreen() {
         </View>
       )}
 
-      <Card style={styles.missionCard} onPress={handleStartLearning}>
-        <View style={styles.missionHeader}>
-          <View style={styles.missionIcon}>
-            <Ionicons name="book" size={28} color="#4CAF50" />
+      {currentCategory && (
+        <Card style={styles.missionCard} onPress={handleStartLearning}>
+          <View style={styles.missionHeader}>
+            <View style={styles.missionIcon}>
+              <Text style={styles.missionEmoji}>{currentCategory.category.icon}</Text>
+            </View>
+            <View style={styles.missionInfo}>
+              <Text style={styles.missionTitle}>오늘의 학습</Text>
+              <Text style={styles.missionSubtitle}>
+                {currentCategory.category.name} ({currentCategory.learned}/{currentCategory.total}문장)
+              </Text>
+            </View>
           </View>
-          <View style={styles.missionInfo}>
-            <Text style={styles.missionTitle}>오늘의 학습</Text>
-            <Text style={styles.missionSubtitle}>
-              카페에서 주문하기 ({cafeSentences.length}문장)
-            </Text>
-          </View>
-        </View>
-        <Button
-          title="학습 시작"
-          onPress={handleStartLearning}
-          size="large"
-          icon={<Ionicons name="play" size={20} color="#ffffff" />}
-        />
-      </Card>
+          <Button
+            title={currentCategory.learned === 0 ? '학습 시작' : '학습 계속하기'}
+            onPress={handleStartLearning}
+            size="large"
+            icon={<Ionicons name="play" size={20} color="#ffffff" />}
+          />
+        </Card>
+      )}
 
       {reviewCount > 0 && (
         <Card style={styles.reviewCard} onPress={handleGoToReview}>
@@ -131,9 +175,19 @@ export default function HomeScreen() {
       </View>
 
       <View style={styles.categoriesPreview}>
-        <Text style={styles.sectionTitle}>카테고리</Text>
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>카테고리</Text>
+          <TouchableOpacity onPress={handleGoToCategories} style={styles.moreButton}>
+            <Text style={styles.moreButtonText}>더보기</Text>
+            <Ionicons name="chevron-forward" size={16} color="#4CAF50" />
+          </TouchableOpacity>
+        </View>
         {categories.slice(0, 3).map((category) => (
-          <Card key={category.id} style={styles.categoryItem}>
+          <Card
+            key={category.id}
+            style={styles.categoryItem}
+            onPress={() => handleCategoryPress(category.id)}
+          >
             <Text style={styles.categoryIcon}>{category.icon}</Text>
             <View style={styles.categoryInfo}>
               <Text style={styles.categoryName}>{category.name}</Text>
@@ -211,6 +265,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  missionEmoji: {
+    fontSize: 28,
+  },
   missionInfo: {
     flex: 1,
   },
@@ -258,11 +315,27 @@ const styles = StyleSheet.create({
   statsSection: {
     marginBottom: 24,
   },
+  sectionHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
   sectionTitle: {
     fontSize: 18,
     fontWeight: '600',
     color: '#1A1A1A',
     marginBottom: 12,
+  },
+  moreButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 2,
+  },
+  moreButtonText: {
+    fontSize: 14,
+    color: '#4CAF50',
+    fontWeight: '500',
   },
   statsGrid: {
     flexDirection: 'row',
