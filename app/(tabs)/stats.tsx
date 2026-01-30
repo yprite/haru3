@@ -111,7 +111,7 @@ export default function StatsScreen() {
   return (
     <ScrollView
       style={styles.container}
-      contentContainerStyle={[styles.contentContainer, { paddingTop: insets.top + 16, paddingBottom: 120 }]}
+      contentContainerStyle={[styles.contentContainer, { paddingTop: insets.top + 16, paddingBottom: insets.bottom + 32 }]}
     >
       {/* 연간 학습 캘린더 */}
       <Card style={styles.calendarCard}>
@@ -178,7 +178,6 @@ export default function StatsScreen() {
           </View>
         )}
       </Card>
-      <View style={styles.bottomSpacer} />
     </ScrollView>
   );
 }
@@ -194,57 +193,57 @@ const styles = StyleSheet.create({
   },
   // 연간 캘린더
   calendarCard: {
-    padding: 20,
-    marginBottom: 20,
+    padding: 16,
+    marginBottom: 16,
   },
   calendarHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-    marginBottom: 20,
+    marginBottom: 12,
   },
   calendarTitle: {
-    fontSize: 24,
+    fontSize: 20,
     fontWeight: '700',
     color: '#1A1A1A',
   },
   calendarYear: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: '600',
     color: '#2196F3',
-    marginTop: 4,
+    marginTop: 2,
   },
   calendarStats: {
     alignItems: 'flex-end',
   },
   calendarStatsMain: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: '600',
     color: '#1A1A1A',
   },
   calendarStatsSub: {
-    fontSize: 14,
+    fontSize: 12,
     color: '#666666',
-    marginTop: 4,
+    marginTop: 2,
   },
   yearSelector: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 20,
-    gap: 20,
+    marginBottom: 12,
+    gap: 16,
   },
   yearButton: {
-    padding: 10,
+    padding: 8,
   },
   yearButtonDisabled: {
     opacity: 0.5,
   },
   yearText: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: '700',
     color: '#1A1A1A',
-    minWidth: 80,
+    minWidth: 70,
     textAlign: 'center',
   },
   monthsGrid: {
@@ -254,30 +253,30 @@ const styles = StyleSheet.create({
   },
   monthContainer: {
     width: '32%',
-    marginBottom: 20,
+    marginBottom: 14,
   },
   monthLabel: {
-    fontSize: 15,
+    fontSize: 13,
     fontWeight: '600',
     color: '#1A1A1A',
-    marginBottom: 8,
+    marginBottom: 6,
   },
   daysGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 3,
+    gap: 2,
   },
   dayCell: {
-    width: 12,
-    height: 12,
-    borderRadius: 3,
+    width: 10,
+    height: 10,
+    borderRadius: 2,
     backgroundColor: '#E8F5E9',
   },
   dayCellStudied: {
     backgroundColor: '#4CAF50',
   },
   dayCellToday: {
-    borderWidth: 2,
+    borderWidth: 1,
     borderColor: '#1A1A1A',
   },
   dayCellFuture: {
@@ -288,17 +287,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: '#FFF8E1',
-    padding: 14,
-    borderRadius: 12,
-    marginTop: 12,
-    gap: 10,
+    padding: 10,
+    borderRadius: 10,
+    marginTop: 8,
+    gap: 8,
   },
   streakText: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: '600',
     color: '#F57C00',
-  },
-  bottomSpacer: {
-    height: 50,
   },
 });
