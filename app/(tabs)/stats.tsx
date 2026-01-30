@@ -178,6 +178,7 @@ export default function StatsScreen() {
           </View>
         )}
       </Card>
+      <View style={styles.bottomSpacer} />
     </ScrollView>
   );
 }
@@ -296,5 +297,8 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
     color: '#F57C00',
+  },
+  bottomSpacer: {
+    height: 50,
   },
 });
