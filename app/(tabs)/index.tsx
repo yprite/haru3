@@ -1,19 +1,56 @@
-import { useEffect, useCallback, useMemo } from 'react';
-import { StyleSheet, Text, View, ScrollView, TouchableOpacity } from 'react-native';
+import { useEffect, useCallback, useMemo, useState, useRef } from 'react';
+import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Animated } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router, useFocusEffect } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useContentStore, useProgressStore } from '../../src/stores';
-import { Card, Button } from '../../src/components';
+import { Card, Button, DailyGoalTracker, BrainScienceBanner } from '../../src/components';
+
+const MOTIVATIONAL_MESSAGES = [
+  '오늘 3문장, 90일 후엔 270문장이 장기기억에',
+  '뇌과학이 증명한 학습법: 조금씩, 자주, 꾸준히',
+  '복습 알림? 뇌가 기억하기 딱 좋은 타이밍이에요',
+  '3문장이면 충분해요. 나머지는 뇌가 연결해요',
+  '잊기 직전 복습 = 기억 4배 강화',
+  '매일 5분, 1년이면 1,000문장 마스터',
+  '청킹 학습: 덩어리로 외우면 2배 쉬워요',
+  '테스트 효과: 떠올리는 게 진짜 공부예요',
+  '작은 습관이 큰 변화를 만들어요',
+  '당신의 뇌는 이미 준비되어 있어요',
+];
 
 export default function HomeScreen() {
   const insets = useSafeAreaInsets();
   const { sentences, categories, loadContent, isLoading } = useContentStore();
-  const { stats, reviewQueue, progressMap, loadProgress, loadReviewQueue } = useProgressStore();
+  const { stats, settings, reviewQueue, progressMap, loadProgress, loadReviewQueue } = useProgressStore();
+  const [motivationalMessage, setMotivationalMessage] = useState(
+    MOTIVATIONAL_MESSAGES[Math.floor(Math.random() * MOTIVATIONAL_MESSAGES.length)]
+  );
+  const fadeAnim = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
     loadContent();
   }, [loadContent]);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      Animated.timing(fadeAnim, {
+        toValue: 0,
+        duration: 300,
+        useNativeDriver: true,
+      }).start(() => {
+        setMotivationalMessage(
+          MOTIVATIONAL_MESSAGES[Math.floor(Math.random() * MOTIVATIONAL_MESSAGES.length)]
+        );
+        Animated.timing(fadeAnim, {
+          toValue: 1,
+          duration: 300,
+          useNativeDriver: true,
+        }).start();
+      });
+    }, 10000);
+    return () => clearInterval(interval);
+  }, [fadeAnim]);
 
   useFocusEffect(
     useCallback(() => {
@@ -78,6 +115,18 @@ export default function HomeScreen() {
 
   const reviewCount = reviewQueue.length;
 
+  // 오늘 학습한 문장 수 계산
+  const todayLearned = useMemo(() => {
+    const today = new Date().toISOString().split('T')[0];
+    let count = 0;
+    progressMap.forEach((progress) => {
+      if (progress.lastStudiedAt?.startsWith(today)) {
+        count++;
+      }
+    });
+    return count;
+  }, [progressMap]);
+
   const lastStudiedSentence = useMemo(() => {
     const progressList = Array.from(progressMap.values());
     if (progressList.length === 0) return null;
@@ -105,12 +154,23 @@ export default function HomeScreen() {
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={[styles.content, { paddingTop: insets.top + 20, paddingBottom: insets.bottom + 40 }]}>
-      <View style={styles.greeting}>
-        <Text style={styles.greetingText}>오늘도 일본어 학습!</Text>
-        <Text style={styles.subGreeting}>
-          매일 3문장씩, 자연스럽게 익혀요
-        </Text>
+      <View style={styles.header}>
+        <View style={styles.greeting}>
+          <Text style={styles.greetingText}>하루 {settings?.dailySentenceCount ?? 3}문장</Text>
+          <Text style={styles.tagline}>뇌가 기억하는 방식으로</Text>
+          <Animated.Text style={[styles.subGreeting, { opacity: fadeAnim }]}>
+            {motivationalMessage}
+          </Animated.Text>
+        </View>
+        <TouchableOpacity
+          style={styles.settingsButton}
+          onPress={() => router.push('/settings')}
+        >
+          <Ionicons name="settings-outline" size={24} color="#666666" />
+        </TouchableOpacity>
       </View>
+
+      <DailyGoalTracker todayLearned={todayLearned} dailyGoal={settings?.dailySentenceCount ?? 3} />
 
       {lastStudiedSentence && (
         <View style={styles.lastStudied}>
@@ -153,9 +213,13 @@ export default function HomeScreen() {
             </View>
           </View>
           <Text style={styles.reviewDescription}>
-            복습이 필요한 문장이 있어요
+            뇌가 잊기 직전이에요. 지금 복습하면 4배 강화!
           </Text>
         </Card>
+      )}
+
+      {reviewCount > 0 && (
+        <BrainScienceBanner type="spacing" collapsed={true} />
       )}
 
       <View style={styles.statsSection}>
@@ -163,15 +227,15 @@ export default function HomeScreen() {
         <View style={styles.statsGrid}>
           <View style={styles.statItem}>
             <Text style={styles.statValue}>{stats?.totalSentencesStudied ?? 0}</Text>
-            <Text style={styles.statLabel}>학습한 문장</Text>
+            <Text style={styles.statLabel}>단기기억</Text>
           </View>
           <View style={styles.statItem}>
             <Text style={styles.statValue}>{stats?.masteredSentences ?? 0}</Text>
-            <Text style={styles.statLabel}>마스터</Text>
+            <Text style={styles.statLabel}>장기기억</Text>
           </View>
           <View style={styles.statItem}>
             <Text style={styles.statValue}>{Math.min(stats?.currentStreak ?? 0, 7)}일</Text>
-            <Text style={styles.statLabel}>이번 주</Text>
+            <Text style={styles.statLabel}>연속 학습</Text>
           </View>
         </View>
       </View>
@@ -222,23 +286,39 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#666666',
   },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: 20,
+  },
   greeting: {
-    marginBottom: 24,
+    flex: 1,
+  },
+  settingsButton: {
+    padding: 8,
+    marginTop: 4,
   },
   greetingText: {
-    fontSize: 28,
-    fontWeight: '700',
+    fontSize: 32,
+    fontWeight: '800',
     color: '#1A1A1A',
-    marginBottom: 4,
+  },
+  tagline: {
+    fontSize: 18,
+    fontWeight: '500',
+    color: '#4CAF50',
+    marginBottom: 8,
   },
   subGreeting: {
-    fontSize: 16,
+    fontSize: 14,
     color: '#666666',
   },
   lastStudied: {
     backgroundColor: '#E3F2FD',
     borderRadius: 12,
     padding: 14,
+    marginTop: 16,
     marginBottom: 16,
   },
   lastStudiedLabel: {
@@ -251,6 +331,7 @@ const styles = StyleSheet.create({
     color: '#333333',
   },
   missionCard: {
+    marginTop: 8,
     marginBottom: 16,
     gap: 16,
   },

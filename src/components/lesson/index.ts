@@ -5,3 +5,4 @@ export { StepSpeak } from './StepSpeak';
 export { StepRecall } from './StepRecall';
 export { StepAssembly } from './StepAssembly';
 export { StepComplete } from './StepComplete';
+export { DailyGoalComplete } from './DailyGoalComplete';

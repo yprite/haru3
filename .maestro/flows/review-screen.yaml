@@ -1,0 +1,36 @@
+# Review Screen E2E Test
+# 복습 화면 테스트
+
+appId: com.iaminjapan.app
+---
+- launchApp
+
+# 탭바에서 복습 탭 선택
+- tapOn: "복습"
+
+# 복습 화면 진입 확인 (복습 대기 또는 완료 상태)
+- assertVisible:
+    anyOf:
+      - "복습 대기"
+      - "복습 완료"
+
+# 복습 대기 상태인 경우
+- runFlow:
+    when:
+      visible: "복습 대기"
+    commands:
+      # 망각 곡선 카드 확인
+      - assertVisible: "망각 곡선"
+      - assertVisible: "현재 기억률"
+      - assertVisible: "복습 후"
+
+      # 복습 시작 버튼 확인
+      - assertVisible: "지금 복습하기"
+
+# 복습 완료 상태인 경우
+- runFlow:
+    when:
+      visible: "복습 완료"
+    commands:
+      - assertVisible: "오늘 복습할 문장이 없어요"
+      - assertVisible: "학습하러 가기"

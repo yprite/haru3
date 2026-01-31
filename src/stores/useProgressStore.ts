@@ -17,6 +17,7 @@ interface ProgressActions {
   loadReviewQueue: () => Promise<void>;
   updateAfterReview: (sentenceId: string, rating: RecallRating) => Promise<void>;
   getProgress: (sentenceId: string) => UserProgress | null;
+  getNextReviewDate: () => string | null;
   updateSettings: (settings: Partial<UserSettings>) => Promise<void>;
   incrementStudyTime: (minutes: number) => Promise<void>;
   clearAllData: () => Promise<void>;
@@ -91,6 +92,30 @@ export const useProgressStore = create<ProgressStore>((set, get) => ({
 
   getProgress: (sentenceId: string) => {
     return get().progressMap.get(sentenceId) ?? null;
+  },
+
+  getNextReviewDate: () => {
+    const { progressMap, reviewQueue } = get();
+
+    // If there are items in review queue, no need to show next date
+    if (reviewQueue.length > 0) {
+      return null;
+    }
+
+    // Find the earliest future review date
+    const today = getToday();
+    let earliestDate: string | null = null;
+
+    for (const progress of progressMap.values()) {
+      const reviewDate = progress.nextReviewDate;
+      if (reviewDate && reviewDate > today) {
+        if (!earliestDate || reviewDate < earliestDate) {
+          earliestDate = reviewDate;
+        }
+      }
+    }
+
+    return earliestDate;
   },
 
   updateSettings: async (newSettings: Partial<UserSettings>) => {

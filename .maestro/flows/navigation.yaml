@@ -1,0 +1,32 @@
+# Navigation E2E Test
+# 탭 네비게이션 테스트
+
+appId: com.iaminjapan.app
+---
+- launchApp
+
+# 홈 탭 (기본)
+- assertVisible: "하루 3문장"
+
+# 통계 탭으로 이동
+- tapOn: "통계"
+- assertVisible: "학습 기록"
+
+# 복습 탭으로 이동
+- tapOn: "복습"
+- assertVisible:
+    anyOf:
+      - "복습 대기"
+      - "복습 완료"
+
+# 다시 홈으로
+- tapOn: "홈"
+- assertVisible: "하루 3문장"
+
+# 카테고리 더보기
+- tapOn: "더보기"
+- assertVisible: "학습 카테고리"
+
+# 뒤로 가기
+- back
+- assertVisible: "하루 3문장"

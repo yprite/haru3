@@ -4,13 +4,14 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useContentStore, useProgressStore, useSessionStore } from '../../src/stores';
-import { Card, Button } from '../../src/components';
-import { getStageLabel, getStageColor } from '../../src/utils/srs';
+import { Card, Button, ForgettingCurveCard } from '../../src/components';
+import { getStageLabel, getStageColor, getDaysUntilReview } from '../../src/utils/srs';
+import { formatDate } from '../../src/utils/date';
 
 export default function ReviewScreen() {
   const insets = useSafeAreaInsets();
   const { sentences, loadContent } = useContentStore();
-  const { reviewQueue, progressMap, loadProgress, loadReviewQueue } = useProgressStore();
+  const { reviewQueue, progressMap, loadProgress, loadReviewQueue, getNextReviewDate } = useProgressStore();
   const { startSession } = useSessionStore();
 
   useEffect(() => {
@@ -34,6 +35,10 @@ export default function ReviewScreen() {
   };
 
   if (reviewSentences.length === 0) {
+    const nextReviewDate = getNextReviewDate();
+    const hasLearnedSentences = progressMap.size > 0;
+    const daysUntil = nextReviewDate ? getDaysUntilReview(nextReviewDate) : null;
+
     return (
       <View style={[styles.emptyContainer, { paddingTop: insets.top, paddingBottom: insets.bottom }]}>
         <View style={styles.emptyIcon}>
@@ -42,8 +47,20 @@ export default function ReviewScreen() {
         <Text style={styles.emptyTitle}>복습 완료!</Text>
         <Text style={styles.emptySubtitle}>
           오늘 복습할 문장이 없어요.{'\n'}
-          새로운 문장을 학습해 보세요.
+          {hasLearnedSentences && nextReviewDate ? (
+            <>
+              다음 복습: {formatDate(nextReviewDate)}
+              {daysUntil !== null && daysUntil > 0 && ` (${daysUntil}일 후)`}
+            </>
+          ) : (
+            '새로운 문장을 학습해 보세요.'
+          )}
         </Text>
+        {hasLearnedSentences && nextReviewDate && (
+          <Text style={styles.srsExplanation}>
+            최적의 타이밍에 복습해야 기억이 오래 남아요!
+          </Text>
+        )}
         <Button
           title="학습하러 가기"
           onPress={() => router.push('/')}
@@ -62,22 +79,20 @@ export default function ReviewScreen() {
         </View>
       </View>
       <Text style={styles.pageSubtitle}>
-        잊기 전에 복습하면 기억이 더 오래 남아요
+        에빙하우스 망각곡선에 따르면, 지금이 복습 골든타임!
       </Text>
 
-      <View style={styles.retentionInfo}>
-        <Ionicons name="trending-up" size={18} color="#1976D2" />
-        <Text style={styles.retentionText}>
-          오늘 복습하면 기억 유지율 90% · 미루면 점점 잊혀져요
-        </Text>
-      </View>
+      <ForgettingCurveCard
+        reviewCount={reviewSentences.length}
+        retentionPercent={70}
+      />
 
       <Button
-        title="전체 복습 시작"
+        title="지금 복습하기 (기억 4배 강화)"
         onPress={handleStartReview}
         size="large"
         style={styles.startButton}
-        icon={<Ionicons name="play" size={20} color="#ffffff" />}
+        icon={<Ionicons name="flash" size={20} color="#ffffff" />}
       />
 
       <View style={styles.sentencesList}>
@@ -148,6 +163,13 @@ const styles = StyleSheet.create({
   goButton: {
     paddingHorizontal: 32,
   },
+  srsExplanation: {
+    fontSize: 14,
+    color: '#4CAF50',
+    textAlign: 'center',
+    marginBottom: 24,
+    fontWeight: '500',
+  },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -171,25 +193,12 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   pageSubtitle: {
-    fontSize: 16,
+    fontSize: 15,
     color: '#666666',
-    marginBottom: 12,
-  },
-  retentionInfo: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#E3F2FD',
-    borderRadius: 10,
-    padding: 12,
-    gap: 8,
-    marginBottom: 20,
-  },
-  retentionText: {
-    fontSize: 13,
-    color: '#1565C0',
-    flex: 1,
+    marginBottom: 16,
   },
   startButton: {
+    marginTop: 16,
     marginBottom: 24,
   },
   sentencesList: {

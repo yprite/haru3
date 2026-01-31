@@ -2,9 +2,18 @@ import { StyleSheet, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import type { Sentence } from '../../types';
 import { Button, Card } from '../common';
+import { SRSProgressVisual } from '../brain-science';
 import { getStageLabel, getStageColor, calculateNextReview } from '../../utils/srs';
 import { formatDate } from '../../utils/date';
 import type { SRSStage } from '../../types/content';
+
+const SRS_STAGE_MESSAGES: Record<SRSStage, string> = {
+  0: '첫 만남! 내일 다시 만나요',
+  1: '3일 후, 기억이 흐려지기 직전에 복습해요',
+  2: '일주일 후, 단기기억 → 중기기억 전환 중',
+  3: '2주 후, 이제 장기기억에 저장되기 시작해요',
+  4: '한 달 후 복습으로 평생 기억 완성!',
+};
 
 interface StepCompleteProps {
   sentence: Sentence;
@@ -39,7 +48,7 @@ export function StepComplete({
             <Ionicons name="checkmark-circle" size={80} color="#4CAF50" />
           </View>
           <Text style={styles.title}>학습 완료!</Text>
-          <Text style={styles.subtitle}>이 문장을 훌륭하게 마쳤어요</Text>
+          <Text style={styles.subtitle}>뇌에 새로운 연결이 만들어졌어요</Text>
         </View>
 
         <Card style={styles.summaryCard}>
@@ -49,25 +58,27 @@ export function StepComplete({
 
           <View style={styles.divider} />
 
-          <View style={styles.statsRow}>
-            <View style={styles.statItem}>
-              <Text style={styles.statLabel}>학습 단계</Text>
-              <View style={[styles.stageBadge, { backgroundColor: stageColor }]}>
-                <Text style={styles.stageText}>{stageLabel}</Text>
-              </View>
-            </View>
+          <View style={styles.srsContainer}>
+            <Text style={styles.srsTitle}>기억 강화 단계</Text>
+            <SRSProgressVisual currentStage={stage} size="small" showLabels={false} />
           </View>
 
           <View style={styles.divider} />
 
           <View style={styles.reviewInfo}>
-            <Ionicons name="calendar-outline" size={18} color="#666666" />
+            <Ionicons name="flash" size={20} color="#2196F3" />
             <Text style={styles.reviewText}>
-              다음 복습: {formattedReviewDate}
+              {SRS_STAGE_MESSAGES[stage]}
             </Text>
           </View>
-          <Text style={styles.reviewHint}>
-            그때 복습하면 장기기억으로 저장돼요
+          <View style={styles.reviewDateRow}>
+            <Ionicons name="calendar-outline" size={16} color="#888888" />
+            <Text style={styles.reviewHint}>
+              {formattedReviewDate}에 알림을 드릴게요
+            </Text>
+          </View>
+          <Text style={styles.reviewBenefit}>
+            그때 복습하면 기억이 4배 강화!
           </Text>
         </Card>
 
@@ -206,22 +217,44 @@ const styles = StyleSheet.create({
     color: '#5D4037',
     lineHeight: 22,
   },
+  srsContainer: {
+    alignItems: 'center',
+    gap: 12,
+  },
+  srsTitle: {
+    fontSize: 13,
+    color: '#888888',
+    fontWeight: '500',
+  },
   reviewInfo: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 6,
+    gap: 8,
   },
   reviewText: {
     fontSize: 15,
-    color: '#666666',
-    fontWeight: '500',
+    color: '#1A1A1A',
+    fontWeight: '600',
+    flex: 1,
+  },
+  reviewDateRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    marginTop: 8,
   },
   reviewHint: {
     fontSize: 13,
     color: '#888888',
+  },
+  reviewBenefit: {
+    fontSize: 14,
+    color: '#4CAF50',
+    fontWeight: '600',
     textAlign: 'center',
-    marginTop: 4,
+    marginTop: 8,
   },
   progressCard: {
     backgroundColor: '#E8F5E9',

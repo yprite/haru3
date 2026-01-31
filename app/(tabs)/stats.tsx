@@ -178,6 +178,58 @@ export default function StatsScreen() {
           </View>
         )}
       </Card>
+
+      {/* 뇌과학 인사이트 */}
+      <Card style={styles.insightCard}>
+        <View style={styles.insightHeader}>
+          <Ionicons name="bulb" size={22} color="#2196F3" />
+          <Text style={styles.insightTitle}>뇌과학 인사이트</Text>
+        </View>
+
+        <View style={styles.insightGrid}>
+          <View style={styles.insightItem}>
+            <Text style={styles.insightValue}>~{yearStats.studiedDays * 3}</Text>
+            <Text style={styles.insightLabel}>문장이 장기기억에</Text>
+          </View>
+          <View style={styles.insightItem}>
+            <Text style={styles.insightValue}>{Math.round(yearStats.studiedDays * 5)}분</Text>
+            <Text style={styles.insightLabel}>뇌 훈련 시간</Text>
+          </View>
+        </View>
+
+        <View style={styles.insightTip}>
+          <Text style={styles.insightTipText}>
+            {yearStats.currentStreak >= 7
+              ? '일주일 연속! 뇌가 일본어를 자동화하고 있어요'
+              : yearStats.currentStreak >= 3
+              ? '3일 연속! 새로운 신경 회로가 만들어지는 중'
+              : '매일 학습하면 뇌의 시냅스 연결이 강화돼요'}
+          </Text>
+        </View>
+      </Card>
+
+      {/* 학습 원리 */}
+      <Card style={styles.principleCard}>
+        <Text style={styles.principleTitle}>왜 하루 3문장일까요?</Text>
+        <View style={styles.principleItem}>
+          <Ionicons name="time-outline" size={18} color="#4CAF50" />
+          <Text style={styles.principleText}>
+            뇌는 한 번에 7±2개만 기억할 수 있어요
+          </Text>
+        </View>
+        <View style={styles.principleItem}>
+          <Ionicons name="repeat-outline" size={18} color="#4CAF50" />
+          <Text style={styles.principleText}>
+            적은 양을 자주 반복하면 장기기억으로 전환
+          </Text>
+        </View>
+        <View style={styles.principleItem}>
+          <Ionicons name="trending-up-outline" size={18} color="#4CAF50" />
+          <Text style={styles.principleText}>
+            90일 × 3문장 = 270문장 마스터
+          </Text>
+        </View>
+      </Card>
     </ScrollView>
   );
 }
@@ -193,14 +245,15 @@ const styles = StyleSheet.create({
   },
   // 연간 캘린더
   calendarCard: {
-    padding: 20,
-    marginBottom: 19,
+    padding: 19,
+    marginTop: 8,
+    marginBottom: 18,
   },
   calendarHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-    marginBottom: 19,
+    marginBottom: 18,
   },
   calendarTitle: {
     fontSize: 24,
@@ -230,8 +283,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 19,
-    gap: 20,
+    marginBottom: 18,
+    gap: 19,
   },
   yearButton: {
     padding: 10,
@@ -253,7 +306,7 @@ const styles = StyleSheet.create({
   },
   monthContainer: {
     width: '32%',
-    marginBottom: 19,
+    marginBottom: 18,
   },
   monthLabel: {
     fontSize: 15,
@@ -296,5 +349,76 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
     color: '#F57C00',
+  },
+  // 뇌과학 인사이트
+  insightCard: {
+    padding: 16,
+    marginBottom: 16,
+  },
+  insightHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 16,
+  },
+  insightTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#1A1A1A',
+  },
+  insightGrid: {
+    flexDirection: 'row',
+    gap: 12,
+    marginBottom: 16,
+  },
+  insightItem: {
+    flex: 1,
+    backgroundColor: '#F5F9FF',
+    borderRadius: 12,
+    padding: 16,
+    alignItems: 'center',
+  },
+  insightValue: {
+    fontSize: 28,
+    fontWeight: '800',
+    color: '#2196F3',
+    marginBottom: 4,
+  },
+  insightLabel: {
+    fontSize: 13,
+    color: '#666666',
+    textAlign: 'center',
+  },
+  insightTip: {
+    backgroundColor: '#E8F5E9',
+    borderRadius: 10,
+    padding: 12,
+  },
+  insightTipText: {
+    fontSize: 14,
+    color: '#2E7D32',
+    textAlign: 'center',
+    fontWeight: '500',
+  },
+  // 학습 원리
+  principleCard: {
+    padding: 16,
+  },
+  principleTitle: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#1A1A1A',
+    marginBottom: 14,
+  },
+  principleItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    marginBottom: 10,
+  },
+  principleText: {
+    fontSize: 14,
+    color: '#333333',
+    flex: 1,
   },
 });

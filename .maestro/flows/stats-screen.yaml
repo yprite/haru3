@@ -1,0 +1,38 @@
+# Stats Screen E2E Test
+# 통계 화면 테스트
+
+appId: com.iaminjapan.app
+---
+- launchApp
+
+# 탭바에서 통계 탭 선택
+- tapOn: "통계"
+
+# 학습 기록 카드 확인
+- assertVisible: "학습 기록"
+
+# 연도 선택기 확인
+- assertVisible: "2026"
+
+# 월 레이블 확인
+- assertVisible: "Jan"
+- assertVisible: "Feb"
+- assertVisible: "Mar"
+
+# 뇌과학 인사이트 카드 확인
+- assertVisible: "뇌과학 인사이트"
+- assertVisible: "장기기억에"
+- assertVisible: "뇌 훈련 시간"
+
+# 학습 원리 카드 확인
+- assertVisible: "왜 하루 3문장일까요"
+
+# 이전 연도로 이동
+- tapOn:
+    id: "chevron-back"
+- assertVisible: "2025"
+
+# 다시 현재 연도로
+- tapOn:
+    id: "chevron-forward"
+- assertVisible: "2026"

@@ -13,11 +13,13 @@ import {
   StepRecall,
   StepAssembly,
   StepComplete,
+  DailyGoalComplete,
 } from '../../src/components/lesson';
 
 export default function LessonScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const [loadingTimeout, setLoadingTimeout] = useState(false);
+  const [showDailyGoalComplete, setShowDailyGoalComplete] = useState(false);
 
   const {
     currentSentence,
@@ -41,9 +43,13 @@ export default function LessonScreen() {
     moveToNextSentence,
     finishSession,
     endSession,
+    loadMoreSentences,
+    dailyGoalReached,
+    dailyLimit,
+    isLastSentenceInBatch,
   } = useLesson(id);
 
-  const { getProgress, progressMap } = useProgressStore();
+  const { getProgress, progressMap, stats } = useProgressStore();
   const { sentenceQueue, queueIndex } = useSessionStore();
   const { getCategoryById, getSentencesByCategory } = useContentStore();
 
@@ -63,12 +69,26 @@ export default function LessonScreen() {
   const handleNextSentence = () => {
     const hasNext = moveToNextSentence();
     if (!hasNext) {
-      finishSession();
-      router.back();
+      // 3문장 배치 완료 - 목표 달성 화면 표시
+      setShowDailyGoalComplete(true);
     }
   };
 
   const handleFinish = async () => {
+    await finishSession();
+    router.back();
+  };
+
+  const handleContinueLearning = () => {
+    setShowDailyGoalComplete(false);
+    const hasMore = loadMoreSentences();
+    if (!hasMore) {
+      // 더 이상 학습할 문장이 없음
+      handleFinish();
+    }
+  };
+
+  const handleDailyGoalFinish = async () => {
     await finishSession();
     router.back();
   };
@@ -91,6 +111,38 @@ export default function LessonScreen() {
           <Text style={styles.loadingText}>문장을 불러오는 중...</Text>
         )}
       </SafeAreaView>
+    );
+  }
+
+  // 3문장 완료 후 목표 달성 화면 표시
+  if (showDailyGoalComplete) {
+    return (
+      <>
+        <Stack.Screen
+          options={{
+            headerShown: true,
+            headerTitle: '',
+            headerLeft: () => (
+              <Button
+                title="닫기"
+                onPress={handleClose}
+                variant="ghost"
+                size="small"
+                icon={<Ionicons name="close" size={20} color="#666666" />}
+              />
+            ),
+          }}
+        />
+        <SafeAreaView style={styles.container}>
+          <DailyGoalComplete
+            dailyGoal={dailyLimit}
+            completedCount={totalSentences}
+            currentStreak={stats?.currentStreak ?? 0}
+            onContinueLearning={handleContinueLearning}
+            onFinish={handleDailyGoalFinish}
+          />
+        </SafeAreaView>
+      </>
     );
   }
 
@@ -160,7 +212,7 @@ export default function LessonScreen() {
             onAnswerChange={setAssemblyAnswer}
             onNext={async () => {
               await saveProgress();
-              goToNextStep(); // → complete 단계로 이동
+              goToNextStep(); // -> complete 단계로 이동
             }}
             onPrev={goToPreviousStep}
             onCheck={checkAssemblyAnswer}

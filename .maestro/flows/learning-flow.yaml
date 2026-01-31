@@ -1,0 +1,44 @@
+# Learning Flow E2E Test
+# 학습 플로우 테스트
+
+appId: com.iaminjapan.app
+---
+- launchApp
+
+# 홈 화면에서 학습 시작
+- assertVisible: "하루 3문장"
+
+# 학습 시작 버튼 탭
+- tapOn: "학습 시작"
+
+# 학습 화면 진입 확인
+- assertVisible:
+    text: ".*"
+    timeout: 5000
+
+# 듣기 단계
+- assertVisible: "문장 듣기"
+- tapOn: "다음"
+
+# 청크 단계
+- assertVisible: "청크 학습"
+- tapOn: "다음"
+
+# 단어 단계 (있는 경우)
+- tapOn: "다음"
+
+# 말하기 단계
+- assertVisible: "따라 말하기"
+- tapOn: "다음"
+
+# 리콜 단계
+- assertVisible: "기억하기"
+- tapOn: "좋아요"
+
+# 조립 단계
+- assertVisible: "문장 조립"
+# 정답 선택 후 완료
+
+# 학습 완료 확인
+- assertVisible: "학습 완료"
+- assertVisible: "기억 강화 단계"

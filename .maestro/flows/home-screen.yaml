@@ -1,0 +1,23 @@
+# Home Screen E2E Test
+# 홈 화면 기본 동작 테스트
+
+appId: com.iaminjapan.app
+---
+- launchApp
+
+# 홈 화면 타이틀 확인
+- assertVisible: "하루 3문장"
+- assertVisible: "뇌가 기억하는 방식으로"
+
+# DailyGoalTracker 확인
+- assertVisible: "오늘의 목표"
+
+# 학습 현황 섹션 확인
+- assertVisible: "학습 현황"
+- assertVisible: "단기기억"
+- assertVisible: "장기기억"
+- assertVisible: "연속 학습"
+
+# 카테고리 섹션 확인
+- assertVisible: "카테고리"
+- assertVisible: "더보기"

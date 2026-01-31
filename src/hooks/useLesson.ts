@@ -1,7 +1,10 @@
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useSessionStore, useProgressStore, useContentStore } from '../stores';
-import type { RecallRating, Sentence } from '../types';
+import type { RecallRating } from '../types';
 import { useSpeech } from './useSpeech';
+import { getSessionSentences, getTodayStudiedCount, isDailyGoalReached } from '../utils/lessonUtils';
+
+const DEFAULT_DAILY_LIMIT = 3;
 
 export function useLesson(sentenceId?: string) {
   const {
@@ -21,19 +24,43 @@ export function useLesson(sentenceId?: string) {
     setRecallRating,
     goToNextSentence,
     endSession,
+    addMoreSentences,
   } = useSessionStore();
 
-  const { updateAfterReview, incrementStudyTime } = useProgressStore();
+  const { updateAfterReview, incrementStudyTime, settings, progressMap } = useProgressStore();
   const { getSentenceById, getSentencesByCategory } = useContentStore();
 
   const { speak, stop, isSpeaking } = useSpeech();
 
+  const dailyLimit = settings?.dailySentenceCount ?? DEFAULT_DAILY_LIMIT;
+
+  // Ref to avoid infinite loop with progressMap in useEffect
+  const progressMapRef = useRef(progressMap);
+  progressMapRef.current = progressMap;
+
+  const dailyLimitRef = useRef(dailyLimit);
+  dailyLimitRef.current = dailyLimit;
+
+  // 세션 시작 시 3문장만 로드
   useEffect(() => {
     if (sentenceId && !isSessionActive) {
       const sentence = getSentenceById(sentenceId);
       if (sentence) {
         const categorySentences = getSentencesByCategory(sentence.categoryId);
-        startSession(categorySentences);
+        // 3문장 제한 적용
+        const sessionSentences = getSessionSentences(
+          categorySentences,
+          progressMapRef.current,
+          dailyLimitRef.current
+        );
+
+        if (sessionSentences.length > 0) {
+          startSession(sessionSentences);
+        } else {
+          // 오늘 이미 목표 달성 - 첫 번째 문장부터 시작 (추가 학습)
+          const sortedSentences = [...categorySentences].sort((a, b) => a.order - b.order);
+          startSession(sortedSentences.slice(0, dailyLimitRef.current));
+        }
       }
     }
   }, [sentenceId, isSessionActive, getSentenceById, getSentencesByCategory, startSession]);
@@ -77,6 +104,40 @@ export function useLesson(sentenceId?: string) {
     }
   }, [endSession, incrementStudyTime]);
 
+  // 추가 문장 로드 (더 학습하기)
+  const loadMoreSentences = useCallback(() => {
+    if (!currentSentence) return false;
+
+    const categorySentences = getSentencesByCategory(currentSentence.categoryId);
+    const additionalSentences = getSessionSentences(
+      categorySentences,
+      progressMapRef.current,
+      dailyLimitRef.current
+    );
+
+    if (additionalSentences.length > 0) {
+      addMoreSentences(additionalSentences);
+      return true;
+    }
+
+    return false;
+  }, [currentSentence, getSentencesByCategory, addMoreSentences]);
+
+  // 오늘 학습 현황
+  const todayStudiedCount = useMemo(() => {
+    return getTodayStudiedCount(progressMap);
+  }, [progressMap]);
+
+  const dailyGoalReached = useMemo(() => {
+    return isDailyGoalReached(progressMap, dailyLimit);
+  }, [progressMap, dailyLimit]);
+
+  // 현재 세션에서 몇 번째 문장인지
+  const sessionSentenceIndex = queueIndex + 1;
+
+  // 세션의 마지막 문장인지
+  const isLastSentenceInBatch = queueIndex >= sentenceQueue.length - 1;
+
   const totalSteps = 7;
   const totalSentences = sentenceQueue.length;
   const currentSentenceIndex = queueIndex + 1;
@@ -110,5 +171,12 @@ export function useLesson(sentenceId?: string) {
     finishSession,
     startSession,
     endSession,
+    // 3문장 제한 기능
+    loadMoreSentences,
+    todayStudiedCount,
+    dailyGoalReached,
+    dailyLimit,
+    sessionSentenceIndex,
+    isLastSentenceInBatch,
   };
 }

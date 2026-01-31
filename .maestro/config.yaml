@@ -1,0 +1,18 @@
+# Maestro Configuration
+# 앱 ID는 실제 앱 빌드 후 설정 필요
+
+# 기본 설정
+flows:
+  - flows/home-screen.yaml
+  - flows/navigation.yaml
+  - flows/stats-screen.yaml
+  - flows/review-screen.yaml
+  # - flows/learning-flow.yaml  # 콘텐츠 필요
+
+# 환경 변수
+env:
+  APP_ID: com.iaminjapan.app
+
+# 타임아웃 설정
+executionOrder:
+  continueOnFailure: false

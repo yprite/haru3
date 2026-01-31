@@ -8,3 +8,9 @@ export {
   StepAssembly,
   StepComplete,
 } from './lesson';
+export {
+  DailyGoalTracker,
+  SRSProgressVisual,
+  BrainScienceBanner,
+  ForgettingCurveCard,
+} from './brain-science';

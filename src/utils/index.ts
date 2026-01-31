@@ -15,3 +15,11 @@ export {
   addDays,
   daysBetween,
 } from './date';
+
+export {
+  getUnlearnedSentences,
+  getDailySentenceBatch,
+  isDailyGoalReached,
+  getTodayStudiedCount,
+  getSessionSentences,
+} from './lessonUtils';
