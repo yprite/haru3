@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>하루 3문장 - 뇌과학 기반 일본어 학습</title>
+    <link rel="icon" type="image/png" href="icon.png">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 100%);
+            min-height: 100vh;
+            color: #1A1A1A;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        header {
+            text-align: center;
+            padding: 60px 0;
+        }
+
+        .app-icon {
+            width: 120px;
+            height: 120px;
+            border-radius: 24px;
+            box-shadow: 0 8px 32px rgba(76, 175, 80, 0.3);
+            margin-bottom: 24px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            color: #2E7D32;
+            margin-bottom: 12px;
+        }
+
+        .tagline {
+            font-size: 1.2rem;
+            color: #558B2F;
+            margin-bottom: 32px;
+        }
+
+        .download-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            background: #1A1A1A;
+            color: white;
+            padding: 16px 32px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-size: 1.1rem;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .download-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+        }
+
+        .download-btn svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 24px;
+            margin: 60px 0;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 32px;
+            border-radius: 16px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+        }
+
+        .feature-icon {
+            font-size: 2.5rem;
+            margin-bottom: 16px;
+        }
+
+        .feature-card h3 {
+            font-size: 1.2rem;
+            color: #2E7D32;
+            margin-bottom: 8px;
+        }
+
+        .feature-card p {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .science-section {
+            background: white;
+            padding: 48px;
+            border-radius: 24px;
+            margin: 40px 0;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+        }
+
+        .science-section h2 {
+            color: #2E7D32;
+            margin-bottom: 24px;
+            text-align: center;
+        }
+
+        .science-section p {
+            color: #555;
+            line-height: 1.8;
+            margin-bottom: 16px;
+        }
+
+        .intervals {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            margin: 32px 0;
+            flex-wrap: wrap;
+        }
+
+        .interval {
+            background: #E8F5E9;
+            padding: 12px 24px;
+            border-radius: 24px;
+            font-weight: 600;
+            color: #2E7D32;
+        }
+
+        footer {
+            text-align: center;
+            padding: 40px 0;
+            color: #666;
+        }
+
+        footer a {
+            color: #4CAF50;
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            margin-bottom: 16px;
+        }
+
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 2rem;
+            }
+
+            .tagline {
+                font-size: 1rem;
+            }
+
+            .science-section {
+                padding: 32px 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <img src="icon.png" alt="하루 3문장 앱 아이콘" class="app-icon">
+            <h1>하루 3문장</h1>
+            <p class="tagline">뇌가 기억하는 방식으로 일본어를 학습하세요</p>
+            <a href="https://apps.apple.com/app/id0000000000" class="download-btn">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
+                </svg>
+                App Store에서 다운로드
+            </a>
+        </header>
+
+        <section class="features">
+            <div class="feature-card">
+                <div class="feature-icon">🧠</div>
+                <h3>과학적 반복 학습</h3>
+                <p>에빙하우스 망각 곡선을 기반으로 최적의 타이밍에 복습하여 장기 기억으로 전환합니다.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📚</div>
+                <h3>하루 3문장</h3>
+                <p>뇌에 부담 없이 매일 3문장씩. 작은 습관이 큰 변화를 만듭니다.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🎯</div>
+                <h3>JLPT N5 대비</h3>
+                <p>필수 문장 100개로 일본어 기초를 탄탄하게 다집니다.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🔊</div>
+                <h3>원어민 발음</h3>
+                <p>정확한 발음을 듣고 따라하며 자연스러운 억양을 익힙니다.</p>
+            </div>
+        </section>
+
+        <section class="science-section">
+            <h2>🔬 뇌과학 기반 학습법</h2>
+            <p>
+                에빙하우스의 연구에 따르면, 새로 학습한 내용의 70%는 24시간 내에 잊혀집니다.
+                하지만 적절한 간격으로 복습하면 기억 유지율이 급격히 상승합니다.
+            </p>
+            <p>
+                <strong>하루 3문장</strong>은 이 원리를 적용하여 과학적인 간격으로 복습을 제안합니다:
+            </p>
+            <div class="intervals">
+                <span class="interval">당일</span>
+                <span class="interval">3일 후</span>
+                <span class="interval">7일 후</span>
+                <span class="interval">14일 후</span>
+                <span class="interval">30일 후</span>
+            </div>
+            <p>
+                이 간격반복학습(Spaced Repetition System)을 통해 단기 기억이 장기 기억으로
+                효과적으로 전환됩니다.
+            </p>
+        </section>
+
+        <footer>
+            <div class="footer-links">
+                <a href="privacy.html">개인정보처리방침</a>
+                <a href="https://github.com/yprite/haru3/issues">지원</a>
+                <a href="https://github.com/yprite/haru3">GitHub</a>
+            </div>
+            <p>&copy; 2025 하루 3문장. All rights reserved.</p>
+        </footer>
+    </div>
+</body>
+</html>
